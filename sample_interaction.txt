@@ -1,0 +1,382 @@
+        OCaml version 4.00.1
+
+(* Some simple stuff to start with: every value and every expression you
+   write has a type, which OCaml usually infers for you. It will also 
+   check that types agree when you're applying operations or functions
+ *)
+
+(* Basic numerical types include integers (int) and floating-point numbers
+   (float) *)
+
+# 10;;
+- : int = 10
+# 5.0;;
+- : float = 5.
+# 10 + 20;;
+- : int = 30
+
+  (* This shows we cannot mix and match *)
+
+# 5.0 + 10;;
+Characters 0-3:
+  5.0 + 10;;
+  ^^^
+Error: This expression has type float but an expression was expected of type
+         int
+
+  (* This shows + is only defined for integers. Addition for floating-point
+     numbers is +. and similarly for other operations *)
+
+# 5.0 + 10.0;;
+Characters 0-3:
+  5.0 + 10.0;;
+  ^^^
+Error: This expression has type float but an expression was expected of type
+         int
+# 5.0 +. 10.0;;
+- : float = 15.
+
+  (* function float of type int -> float converts an integer to a floating-
+     point number *)
+
+# float 10;;
+- : float = 10.
+
+  (* The Boolean values are true and false, and they are distinct from
+     every other type, i.e., they are not simply integers *)
+
+# true;;
+- : bool = true
+# false;;
+- : bool = false
+# true = false;;
+- : bool = false
+# 1 = 2;;
+- : bool = false
+# 1 = 1;;
+- : bool = true
+# true = 1;;
+Characters 7-8:
+  true = 1;;
+         ^
+Error: This expression has type int but an expression was expected of type
+         bool
+
+  (* Strings are pretty much as expected. They use double-quotes, and
+     not single-quotes a la Python. *)
+
+# "hello world";;
+- : string = "hello world"
+
+  (* Single-quotes are used for characters *)
+
+# 'a';;
+- : char = 'a'
+# 'b';;
+- : char = 'b'
+# '.';;
+- : char = '.'
+# 'cde';;
+Characters 0-1:
+  'cde';;
+  ^
+Error: Syntax error
+
+
+  (* At top level, we can assign a name to the result of evaluating an
+     expression *)
+
+# let a = 40;;
+val a : int = 40
+
+  (* We can then use that name elsewhere to stand in for that value *)
+
+# a + 10;;
+- : int = 50
+
+  (* Note that names used in that way are not variables -- once you
+     bind them to a value, you cannot change that value. The best you
+     can do is give another binding the same name, which shadows the
+     old one. But it doesn't affect any code that you wrote that
+     refers to the old name, which still uses the old value *)
+
+
+
+  (* An extension of defining a name to an expression is to define a 
+     function , which is a name that expects arguments. Here's a simple
+     function to compute a Celsius-to-Fahrenheit conversion *)
+
+# let ctof c = (c *. 9.0 /. 5.0) +. 32.0;;
+val ctof : float -> float = <fun>
+
+  (* Note the type inferred for the function: float -> float
+     If the type inferred is not what you expect, chances are, you've
+     messed up somewhere *)
+  (* Calling a function is simply a matter of supplying the arguments *)
+
+# ctof 5.0;;
+- : float = 41.
+
+  (* Functions in ocaml can only take one argument. We'll see how to 
+     fake multiple arguments later (there are two ways to do that).  *)
+
+  (* Parentheses are used like in math: they only affect order of
+     operations, and have no other meaning. Meaning you can put
+     parentheses around any value, or around any expression, as long
+     as you realize that it means that that expression gets evaluated
+     first, inside out if there are nested parentheses. It also means
+     you have many ways of writing the same thing *)
+
+# ctof 0.0;;
+- : float = 32.
+# ctof (0.0);;
+- : float = 32.
+# (ctof 0.0);;
+- : float = 32.
+# (ctof (0.0));;
+- : float = 32.
+# ctof ((0.0));;
+- : float = 32.
+
+  (* I tend to use parentheses pretty liberally, to make clear what's
+     going on. When in doubt, wrap parentheses around an expression. *)
+
+
+  (* Let's write a function that sums all the integers from 0 to n.
+     There are many ways to do that. If you come from a language such as 
+     C or python or somesuch, you may be tempted to use a for loop, or a 
+     while loop. OCaml has those. But to use them, you need a variable that
+     you can update, which by default in OCaml you do not get. If you
+     write let a = 10, you cannot afterward change the value of a.  *)
+
+   (* To avoid the need for a variable, you can use recursion. Basically
+      you use the intuition that if you have:
+        sumint(n) = 0 + 1 + ... + n-2 + n-1 + n
+      then in fact:
+        sumint(n) = (0 + 1 + ... + n-1) + n
+      which is just
+        sumint(n) = (sumint(n-1)) + n
+      which works fine except when n=0, where you just know that
+        sumint(0) = 0
+      and the above translates to an OCaml definition immediately. *)
+   (* Note the 'rec' keyword that indicates this is a recursive definition *)
+
+#  let rec sumint n =
+    if (n <= 0) then 0 else n + sumint(n-1);;
+val sumint : int -> int = <fun>
+# sumint(10);;
+- : int = 55
+
+  (* An important structure that lets us package values together are tuples *)
+  (* A tuple is created using parentheses and commas to separate the
+     values in the tuple *)
+
+# (10,20);;
+- : int * int = (10, 20)
+
+  (* The values in different positions of a tuple need not have the same
+   * type. Note the resulting tuple type, which uses * *)
+
+# (10, "hello");;
+- : int * string = (10, "hello")
+# (10, true, "help");;
+- : int * bool * string = (10, true, "help")
+
+  (* You can package tuples as elements of other tuples. Note the types *)
+
+# (1,"hello",(10,20));;
+- : int * string * (int * int) = (1, "hello", (10, 20))
+# (1,"hello",10,20);;
+- : int * string * int * int = (1, "hello", 10, 20)
+
+  (* A tuple of three elements, where the third element is a tuple of
+     two elements, is different from a tuple of four elements. *)
+
+  (* How do you get values out of a tuple? You use PATTERN MATCHING *)
+
+# match a with (x,y) -> x;;
+- : int = 10
+# match a with (x,y) -> x + y;;
+- : int = 30
+
+  (* Let's write a function that takes a pair and sums its two elements *)
+
+# let addpair p = match p with (x,y) -> x + y;;
+val addpair : int * int -> int = <fun>
+# addpair (10,20);;
+- : int = 30
+
+  (* It looks like we're calling a function with two arguments. That's 
+     the first way we have to fake multiple arguments to functions -- 
+     we pass in tuples of values. This is common that the whole pattern
+     of passing in a value, matching it to a tuple, and then using the 
+     result of the match has a convenient abbreviation: *)
+
+# let addpair' (x,y) = x + y;;
+val addpair' : int * int -> int = <fun>
+# addpair' (20,30);;
+- : int = 50
+
+  (* We'll see the other way to fake multiple argument functions, 
+     called currying, later in the course.  *)
+
+
+
+  (* another important type to package values is a list. A list can have
+     arbitrary length, but is restricted to values of the same type; the
+     type of the list indicates the type of its content. *)
+
+# [10;20;30];;
+- : int list = [10; 20; 30]
+# ["hello"; "world"];;
+- : string list = ["hello"; "world"]
+
+  (* You can add values to the front of a list using the :: operator. 
+     This creates a new list with that element in front. Lists are 
+     immutable. You can't change their elements once they've been 
+     created. Any operation on lists returns new lists. *) 
+
+# 1::[2;3];;
+- : int list = [1; 2; 3]
+
+# "hello"::[2;3];;
+Characters 10-11:
+  "hello"::[2;3];;
+            ^
+Error: This expression has type int but an expression was expected of type
+         string
+
+  (* Since lists are recursive structures, it makes sense to use recursive
+     functions to traverse a list. To take a list apart, we can use
+     pattern-matching, just like for tuples. To pattern match on a list
+     you check whether the list is empty, or if it's not empty, then 
+     you match on the first element of the list and the rest of the
+     list, using the following "pattern": 
+        match <list-expression> with
+          [] -> <result for an empty list>
+        | h::t -> <result for a nonempty list, with h as first element
+                    and t as the rest of the list>
+   (* The h and t are user-selected names that get bound to the head
+     and the tail of the list, respectively *)
+
+   (* Here's a function to sum the elements of a list of integers *)
+   (* Note the type of the function, which makes it clear it expects
+      a list of integers *)
+
+# let rec sum_list (l) = 
+    match l with
+      [] -> 0
+    | head::tail -> head + sum_list(tail);;
+val sum_list : int list -> int = <fun>
+# sum_list [1;2;3];;
+- : int = 6
+# sum_list [1;2;3;4;5;6;7;8;9;10];;
+- : int = 55
+
+  (* Here's a similar function, to compute the length of a list *)
+
+# let rec length (l) = 
+    match l with
+      [] -> 0
+    | head::tail -> 1 + length(tail);;
+val length : 'a list -> int = <fun>
+
+  (* Something funny here: the length of a list does not depend on its
+     content, and in particular, does not depend on the type of the
+     values it contents. OCaml notices, and gives the function a
+     _polymorphic_ type: the function works with a list of any type, 
+     represented by the type 'a list, where 'a is called  
+     a type variable. *)
+
+# length [1;2;3];;
+- : int = 3
+# length ["hello"; "world"];;
+- : int = 2
+# length [];;
+- : int = 0
+
+  (* This also gives you a hint as to what the type of an empty list
+     is: it is polymorphic *)
+
+# [];;
+- : 'a list = []
+
+
+  (* There is more to polymorphic functions that just being able to take
+     arguments of various types. They can also track the result type of
+     a function as a function of its argument types. As an example, let's
+     look at a function expects a list of pairs, and returning the list 
+     of all the first components of the pairs. *)
+  (* First: what does a list of pairs look like. Note the type. *)
+
+# [(1,"hello"); (2,"world")];;
+- : (int * string) list = [(1, "hello"); (2, "world")]
+
+  (* Here's the function to project out all the first components *)
+  (* Note the type: it expects a list of pairs, each of type ('a * 'b) 
+     for some 'a and some 'b, and returns an 'a list, that is, it returns
+     a list whose type depend on the type of the first component of the
+     pairs in the list passed as an argument. *)
+
+# let rec projectFirst (l) = 
+    match l with
+      [] -> []
+    | (x,y)::tail -> x::(projectFirst(tail));;
+val projectFirst : ('a * 'b) list -> 'a list = <fun>
+
+  (* if we call projectFirst with a list of type (int * string) list, 
+     that is, where 'a = int and 'b = string, we expect a list of type 'a=int
+     as a result. And indeed: *)
+
+# projectFirst [(1,"hello"); (2,"world")];;
+- : int list = [1; 2]
+
+
+  (* The last type of data we need is union types, types whose values can 
+     be one of a number of possibilities. Lists are examples of those, 
+     since a list is either empty (value []) or a value in front of another
+     list (value a::l) *)
+
+  (* Here's a type of numbers, each of which is either an integer or a 
+     floating-point number. I and F are constructors, which are used to 
+     construct values of the 'number' type. *)
+
+# type number = I of int
+              | F of float;;
+type number = I of int | F of float
+# I 5;;
+- : number = I 5
+# I 10;;
+- : number = I 10
+# F 30.0;;
+- : number = F 30.
+
+  (* As usual, types must match *)
+
+# I 10.0;;
+Characters 2-6:
+  I 10.0;;
+    ^^^^
+Error: This expression has type float but an expression was expected of type
+         int
+
+  (* To use such a type, we use matching, just like for lists. We can
+     match the values using the constructors defined in the type. *)
+
+# let add_num (m,n) = 
+    match (m,n) with 
+      (I i, I j) -> I (i+j)
+    | (I i, F f) -> F (float(i) +. f)
+    | (F f, I i) -> F (float(i) +. f)
+    | (F f, F g) -> F (f +. g);;
+val add_num : number * number -> number = <fun>
+# add_num(I 1, F 5.1);;
+- : number = F 6.1
+# add_num(F 10.0, F 10.0);;
+- : number = F 20.
+# add_num(I 1, I 2);;
+- : number = I 3
+
+  (* This leaves the interactive interpreter *)
+
+# #quit;;

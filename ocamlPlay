@@ -1,0 +1,26 @@
+OCaml version 4.01.0
+# let a = [1;2;3];;
+val a : int list = [1; 2; 3]
+# 4 :: a;;
+- : int list = [4; 1; 2; 3]
+# let b = 4::a;;
+val b : int list = [4; 1; 2; 3]
+
+# let first l = match l with [] -> 0 | h::t -> h;;
+# let first'' l = match l with [] -> 0 | (x,y)::z -> x+y;;
+# first'' [(1,2)];;
+
+# let rec sum l = match l with [] -> 0 | h::t -> h + sum(t);;
+val sum : int list -> int = <fun>
+# sum([1;2;3;4;5]);;
+
+# let rec length l = match l with [] -> 0 | h::t -> 1 + length(t);;
+val length : 'a list -> int = <fun>
+# length [1;2;3];;
+- : int = 3
+
+type num = I of int | F of float
+# I 10;;
+- : num = I 10
+# F 4.5;;
+- : num = F 4.5
