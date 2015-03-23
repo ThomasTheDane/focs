@@ -43,15 +43,6 @@ let compose_opt f g = fun x ->
     Some a -> match g a with Some b -> Some b | _ -> None
     | _ -> None
 
-
-
-(*
- * 
- * QUESTION 2 
- * 
- * 
- *)
-
 let at_least n p xs = (List.fold_right (fun x y -> if p x then 1 + y else y) xs 0) > n
 
 (* Assuming positive integers *)
@@ -72,9 +63,6 @@ let map_cross fs xs = List.fold_right (fun a b -> (map_funs fs a) @ b) xs []
  * 
  * 
  *)
-
-let stuff l1 l2 = [l1; l2]
-
 
 let rec suffixes xs = match xs with
   | [] -> [[]]

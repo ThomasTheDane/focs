@@ -245,7 +245,8 @@ let rec deltasOfAlphabet(dfa1, dfa2, startState, alphabet) = match alphabet with
   | [] -> []
   | symbol::t -> 
       let (first, second) = startState in 
-        (startState, symbol, (transition(dfa1, first, symbol), transition(dfa2, second, symbol))) :: deltasOfAlphabet(dfa1, dfa2, startState, t)
+        (startState, symbol, (transition(dfa1, first, symbol), transition(dfa2, second, symbol))) :: 
+        deltasOfAlphabet(dfa1, dfa2, startState, t)
 
 let rec getDeltas(dfa1, dfa2, alphabet, crossed) = match crossed with 
   | [] -> []
@@ -261,7 +262,8 @@ let union (dfa1, dfa2) =
   {alphabet = append(dfa1.alphabet, dfa2.alphabet);
    states = cross(dfa1.states, dfa2.states);
    start = (dfa1.start, dfa2.start);
-   delta = getUniqueSet(getDeltas(dfa1, dfa2, append(dfa1.alphabet, dfa2.alphabet), cross(dfa1.states, dfa2.states)));
+   delta = getUniqueSet(getDeltas(dfa1, dfa2, append(dfa1.alphabet, dfa2.alphabet), 
+    cross(dfa1.states, dfa2.states)));
    final = append(cross(dfa1.final, dfa2.states), cross(dfa2.final, dfa1.states))
   }
 

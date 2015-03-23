@@ -204,34 +204,12 @@ let rec getTransition(deltas, state, input) = match deltas with
 let transition (dfa,state,input) = 
   getTransition(dfa.delta, state, input);;
 
-(*
- *  extendedTransition : 'a dfa * 'a * char list -> 'a
- *
- *    extendedTransition(dfa,q,cs) should return the state obtained by
- *    reading the list of input symbols in 'cs' from state 'q' in the DFA
- *    'dfa'
- *
- *  PROVIDE CODE FOR THIS FUNCTION FOR QUESTION (2) 
- *
- *)
-
 let rec extendedTransition (dfa, state, cs) = match cs with
   | [] -> dfa.start
   | [a] -> getTransition(dfa.delta, state, a)
   | h::t ->
     let newState = getTransition(dfa.delta, state, h) in 
       extendedTransition(dfa, newState, t)
-
-
-(*
- *  accept : 'a dfa * string -> bool
- *
- *    accept(dfa,input) should return true if and only the input string
- *    'input' is accepted by the DFA 'dfa'
- *
- *  PROVIDE CODE FOR THIS FUNCTION FOR QUESTION (2) 
- *
- *)
 
 let accept (dfa, input) = 
   setIn(extendedTransition(dfa, dfa.start, explode(input)), dfa.final)
