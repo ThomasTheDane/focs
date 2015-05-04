@@ -7,7 +7,7 @@
 
    Email: thomas.nattestad@students.olin.edu
 
-   Comments: 
+   Comments: Cool homework but I still long for a better way to debug, also curious why my type for accept_config is different from the one you got. I worked with Josh on the demon game. 
 
  *)
 
